@@ -49,6 +49,11 @@ class OperationSubscriber implements EventSubscriberInterface {
    *   The kernel event object.
    */
   public function onBeforeOperation(OperationEvent $event): void {
+
+    $event->getContext()->addCacheContexts(
+      ['url.query_args:queryId', 'url.query_args:variables', 'url.query_args:extensions']
+    );
+
     if ($this->moduleHandler->moduleExists('language') && !empty($this->languageNegotiator)) {
       OperationLanguageNegotiation::setContext($event->getContext());
     }
