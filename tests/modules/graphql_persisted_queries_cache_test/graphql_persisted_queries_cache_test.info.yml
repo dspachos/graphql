@@ -1,0 +1,8 @@
+type: module
+name: GraphQL Persistent Queries Cache Test
+description: Tests for persistent queries.
+package: Testing
+dependencies:
+  - graphql:graphql
+  - node:node
+core_version_requirement: ^9.3 || ^10
