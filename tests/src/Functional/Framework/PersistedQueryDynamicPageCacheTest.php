@@ -104,6 +104,8 @@ class PersistedQueryDynamicPageCacheTest extends GraphQLFunctionalTestBase {
    */
   public function testDynamicPageCache(): void {
 
+    $url = $this->getAbsoluteUrl($this->server->endpoint);
+
     // The two queries have the exact same structure,
     // only difference is the queryId.
     $query = <<<GQL
@@ -118,13 +120,13 @@ class PersistedQueryDynamicPageCacheTest extends GraphQLFunctionalTestBase {
     $variables = '{"id": 1}';
     // This will X-Drupal-Dynamic-Cache' => 'MISS' (1).
     $options = $this->getRequestOptions($this->server->endpoint, $query, $variables, TRUE);
-    $response = $this->client->request('GET', $this->getAbsoluteUrl($this->server->endpoint), $options);
+    $response = $this->client->request('GET', $url, $options);
     $this->assertEquals($response->getStatusCode(), 200);
     $this->assertEquals($response->getHeader(DynamicPageCacheSubscriber::HEADER), ['MISS']);
 
     // This will X-Drupal-Dynamic-Cache' => 'HIT'.
     $options = $this->getRequestOptions($this->server->endpoint, $query, $variables);
-    $response = $this->client->request('GET', $this->getAbsoluteUrl($this->server->endpoint), $options);
+    $response = $this->client->request('GET', $url, $options);
     $this->assertEquals($response->getStatusCode(), 200);
     $this->assertEquals($response->getHeader(DynamicPageCacheSubscriber::HEADER), ['HIT']);
     $data = Json::decode((string) $response->getBody());
@@ -142,7 +144,7 @@ class PersistedQueryDynamicPageCacheTest extends GraphQLFunctionalTestBase {
     GQL;
     $variables = '{"id": 2}';
     $options = $this->getRequestOptions($this->server->endpoint, $query, $variables, TRUE);
-    $response = $this->client->request('GET', $this->getAbsoluteUrl($this->server->endpoint), $options);
+    $response = $this->client->request('GET', $url, $options);
     $this->assertEquals($response->getStatusCode(), 200);
     $this->assertEquals($response->getHeader(DynamicPageCacheSubscriber::HEADER), ['MISS']);
     $data = Json::decode((string) $response->getBody());
@@ -165,12 +167,12 @@ class PersistedQueryDynamicPageCacheTest extends GraphQLFunctionalTestBase {
 
     $options = $this->getRequestOptions($this->server->endpoint, $query, $variables, TRUE);
     // This will X-Drupal-Dynamic-Cache' => 'MISS'.
-    $response = $this->client->request('GET', $this->getAbsoluteUrl($this->server->endpoint), $options);
+    $response = $this->client->request('GET', $url, $options);
     $this->assertEquals($response->getStatusCode(), 200);
     $this->assertEquals($response->getHeader(DynamicPageCacheSubscriber::HEADER), ['MISS']);
     // This will X-Drupal-Dynamic-Cache' => 'HIT' as well.
     $options = $this->getRequestOptions($this->server->endpoint, $query, $variables);
-    $response = $this->client->request('GET', $this->getAbsoluteUrl($this->server->endpoint), $options);
+    $response = $this->client->request('GET', $url, $options);
     $this->assertEquals($response->getStatusCode(), 200);
     $this->assertEquals($response->getHeader(DynamicPageCacheSubscriber::HEADER), ['HIT']);
     $data = Json::decode((string) $response->getBody());
@@ -192,12 +194,12 @@ class PersistedQueryDynamicPageCacheTest extends GraphQLFunctionalTestBase {
 
     $options = $this->getRequestOptions($this->server->endpoint, $query, $variables, TRUE);
     // Without the fix this will X-Drupal-Dynamic-Cache' => 'HIT' as well.
-    $response = $this->client->request('GET', $this->getAbsoluteUrl($this->server->endpoint), $options);
+    $response = $this->client->request('GET', $url, $options);
     $this->assertEquals($response->getStatusCode(), 200);
     $this->assertEquals($response->getHeader(DynamicPageCacheSubscriber::HEADER), ['MISS']);
     // This will X-Drupal-Dynamic-Cache' => 'HIT' as well.
     $options = $this->getRequestOptions($this->server->endpoint, $query, $variables);
-    $response = $this->client->request('GET', $this->getAbsoluteUrl($this->server->endpoint), $options);
+    $response = $this->client->request('GET', $url, $options);
     $this->assertEquals($response->getStatusCode(), 200);
     $this->assertEquals($response->getHeader(DynamicPageCacheSubscriber::HEADER), ['HIT']);
     $data = Json::decode((string) $response->getBody());
